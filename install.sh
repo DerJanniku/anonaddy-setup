@@ -32,14 +32,16 @@ setup_system() {
 }
 
 harden_ssh() {
-    log "Applying SSH hardening..."
-    useradd -m -s /bin/bash "$ADMIN_USER"
-    usermod -aG sudo "$ADMIN_USER"
-    sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
-    sed -i "s/^PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
-    sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
-    echo "AllowUsers $ADMIN_USER" >> /etc/ssh/sshd_config
-    systemctl restart sshd
+    if check_bool "$SETUP_SECURE_SSH"; then
+        log "Applying SSH hardening..."
+        useradd -m -s /bin/bash "$ADMIN_USER"
+        usermod -aG sudo "$ADMIN_USER"
+        sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+        sed -i "s/^PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
+        sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+        echo "AllowUsers $ADMIN_USER" >> /etc/ssh/sshd_config
+        systemctl restart sshd
+    fi
 }
 
 setup_ufw() {

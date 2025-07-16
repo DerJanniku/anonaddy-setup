@@ -26,8 +26,12 @@ validate_config() {
     log "Validating configuration..."
     local missing_vars=()
     local required_vars=(
-        "DOMAIN" "EMAIL" "ADMIN_USER" "SSH_PORT" "BACKUP_DIR"
+        "DOMAIN" "EMAIL" "BACKUP_DIR"
     )
+
+    if check_bool "$SETUP_SECURE_SSH"; then
+        required_vars+=("ADMIN_USER" "SSH_PORT")
+    fi
 
     if check_bool "$USE_DUCKDNS"; then
         required_vars+=("DUCKDNS_DOMAIN" "DUCKDNS_TOKEN")
