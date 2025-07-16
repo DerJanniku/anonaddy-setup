@@ -153,12 +153,10 @@ EOF
     fi
 
     # --- Docker Services ---
-    if check_bool "$ENABLE_TRAEFIK"; then
-        log "Deploying Traefik..."
-        mkdir -p traefik
-        touch traefik/acme.json
-        chmod 600 traefik/acme.json
-        docker-compose -f traefik/docker-compose.yml up -d
+    if check_bool "$ENABLE_NPM"; then
+        log "Deploying Nginx Proxy Manager..."
+        mkdir -p npm
+        docker-compose -f npm/docker-compose.yml up -d
     fi
 
     if check_bool "$ENABLE_ANONADDY"; then
@@ -200,8 +198,9 @@ EOF
 
     log "Installation complete!"
     log "AnonAddy should be available at https://$DOMAIN"
-    if check_bool "$ENABLE_TRAEFIK"; then
-        log "Traefik dashboard should be available at https://traefik.$DOMAIN"
+    if check_bool "$ENABLE_NPM"; then
+        log "Nginx Proxy Manager should be available at http://<your-server-ip>:81"
+        log "Default login: admin@example.com / changeme"
     fi
 }
 

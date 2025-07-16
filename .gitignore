@@ -10,7 +10,3 @@ traefik/acme.json
 
 # Backups
 backups/
-
-# Node.js
-node_modules/
-package-lock.json

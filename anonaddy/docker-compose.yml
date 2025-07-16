@@ -20,14 +20,8 @@ services:
     depends_on:
       - redis
       - mariadb
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.anonaddy.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.anonaddy.entrypoints=websecure"
-      - "traefik.http.routers.anonaddy.tls.certresolver=le"
-      - "traefik.http.services.anonaddy.loadbalancer.server.port=8000"
-      - "traefik.http.middlewares.modsecurity.forwardauth.address=http://traefik_modsecurity"
-      - "traefik.http.routers.anonaddy.middlewares=modsecurity"
+    ports:
+      - "8000"
     security_opt:
       - no-new-privileges:true
 

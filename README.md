@@ -7,7 +7,7 @@ This repository provides a comprehensive, automated, and hardened setup for self
 - **Automated Installation**: Deploys AnonAddy with a single script.
 - **Hardened Security**: Implements best practices for securing your server.
 - **Dockerized Environment**: Uses Docker and Docker Compose for easy management.
-- **Reverse Proxy with SSL**: Integrates Traefik for automatic SSL certificate generation via Let's Encrypt.
+- **Reverse Proxy with SSL**: Integrates Nginx Proxy Manager for easy SSL certificate management.
 - **Dynamic DNS Support**: Includes support for DuckDNS and Cloudflare.
 - **Firewall Configuration**: Sets up UFW with sensible defaults.
 - **Intrusion Prevention**: Configures Fail2Ban to protect against brute-force attacks.
@@ -38,15 +38,7 @@ This repository provides a comprehensive, automated, and hardened setup for self
     ```
     Now, edit `config.env` with your desired settings.
 
-3.  **Generate Traefik Password:**
-    To secure your Traefik dashboard, you need to generate a password hash. You can do this by running the following command and entering your desired password when prompted:
-    ```bash
-    npm install
-    npm run generate-traefik-password your_password_here
-    ```
-    Copy the resulting hash into the `TRAEFIK_PASSWORD_HASH` variable in your `config.env` file.
-
-4.  **Make the installation script executable:**
+3.  **Make the installation script executable:**
     ```bash
     chmod +x install.sh scripts/*.sh
     ```
@@ -62,7 +54,7 @@ For a highly secure setup, it is recommended to enable the following features in
 
 - `ENABLE_UFW=true`
 - `ENABLE_FAIL2BAN=true`
-- `ENABLE_TRAEFIK=true`
+- `ENABLE_NPM=true`
 - `ENABLE_ANONADDY=true`
 - `ENABLE_WATCHTOWER=true`
 - `ENABLE_BACKUP=true`
@@ -90,7 +82,7 @@ All configuration is done in the `config.env` file. Here's an overview of the av
 | `CF_RECORD_NAME`         | The DNS record to update in Cloudflare.                                     |
 | `ENABLE_UFW`             | Set to `true` to enable and configure UFW.                                  |
 | `ENABLE_FAIL2BAN`        | Set to `true` to install and configure Fail2Ban.                            |
-| `ENABLE_TRAEFIK`         | Set to `true` to deploy Traefik as a reverse proxy.                         |
+| `ENABLE_NPM`             | Set to `true` to deploy Nginx Proxy Manager.                                |
 | `ENABLE_ANONADDY`        | Set to `true` to deploy AnonAddy.                                           |
 | `ENABLE_WATCHTOWER`      | Set to `true` to deploy Watchtower for automatic container updates.         |
 | `ENABLE_BACKUP`          | Set to `true` to enable daily backups.                                      |
@@ -104,8 +96,6 @@ All configuration is done in the `config.env` file. Here's an overview of the av
 | `SSH_PORT`               | The SSH port to use.                                                        |
 | `SSH_ALLOWED_IP`         | An optional IP address or range to restrict SSH access to.                  |
 | `BACKUP_DIR`             | The directory where backups will be stored.                                 |
-| `TRAEFIK_USER`           | The username for the Traefik dashboard.                                     |
-| `TRAEFIK_PASSWORD_HASH`  | The hashed password for the Traefik dashboard.                              |
 | `UPTIMEROBOT_PING_URL`   | The URL for UptimeRobot heartbeats.                                         |
 
 ## Contributing
