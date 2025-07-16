@@ -38,6 +38,18 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  modsecurity:
+    image: owasp/modsecurity-crs:apache
+    container_name: traefik_modsecurity
+    restart: unless-stopped
+    networks:
+      - web
+    environment:
+      - PARANOIA=1
+      - PROXY_LOCATION=http://anonaddy:8000
+    labels:
+      - "traefik.enable=false" # This service is used by the middleware, not exposed directly
+
 networks:
   web:
     external: true
