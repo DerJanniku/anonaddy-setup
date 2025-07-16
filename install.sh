@@ -200,6 +200,8 @@ main() {
     source "$CONFIG_FILE"
     mkdir -p logs backups
 
+    validate_config
+
     log "Starting AnonAddy Hardened Setup..."
 
     setup_system

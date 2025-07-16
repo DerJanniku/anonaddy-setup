@@ -21,3 +21,29 @@ error() {
 check_bool() {
     [[ "$1" == "true" ]] || return 1
 }
+
+validate_config() {
+    log "Validating configuration..."
+    local missing_vars=()
+    local required_vars=(
+        "DOMAIN" "EMAIL" "ADMIN_USER" "SSH_PORT" "BACKUP_DIR"
+    )
+
+    if check_bool "$USE_DUCKDNS"; then
+        required_vars+=("DUCKDNS_DOMAIN" "DUCKDNS_TOKEN")
+    fi
+
+    if check_bool "$USE_CLOUDFLARE"; then
+        required_vars+=("CF_API_TOKEN" "CF_ZONE_ID" "CF_RECORD_NAME")
+    fi
+
+    for var in "${required_vars[@]}"; do
+        if [ -z "${!var}" ]; then
+            missing_vars+=("$var")
+        fi
+    done
+
+    if [ ${#missing_vars[@]} -ne 0 ]; then
+        error "The following required variables are not set in config.env: ${missing_vars[*]}"
+    fi
+}
