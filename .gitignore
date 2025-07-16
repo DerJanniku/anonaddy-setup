@@ -1,0 +1,4 @@
+logs/
+anonaddy/anondaddy/.env
+traefik/acme.json
+config.env
