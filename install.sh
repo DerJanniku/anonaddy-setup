@@ -57,10 +57,7 @@ main() {
     apt-get update && apt-get upgrade -y
 
     log "Installing base packages..."
-    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip aide auditd lynis nodejs npm
-
-    log "Installing npm dependencies..."
-    npm install
+    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip aide auditd lynis
 
     # --- Security ---
     log "Applying SSH hardening..."
@@ -164,12 +161,12 @@ EOF
         if [ ! -d "anonaddy/docker" ]; then
             git clone https://github.com/anonaddy/docker.git anonaddy/docker
         fi
-        cd anonaddy/docker
+        pushd anonaddy/docker
         cp .env.example .env
         sed -i "s/APP_DOMAIN=.*/APP_DOMAIN=$DOMAIN/" .env
         sed -i "s/ADMIN_EMAIL=.*/ADMIN_EMAIL=$EMAIL/" .env
         docker-compose up -d
-        cd ../..
+        popd
     fi
 
     if check_bool "$ENABLE_WATCHTOWER"; then
@@ -189,10 +186,12 @@ EOF
     fi
 
     # --- Monitoring ---
+    # --- Monitoring ---
     if check_bool "$ENABLE_MONITORING"; then
         log "Setting up monitoring..."
         if [ ! -z "${UPTIMEROBOT_PING_URL:-}" ]; then
-            (crontab -l 2>/dev/null; echo "*/5 * * * * curl -fsS --retry 3 ${UPTIMEROBOT_PING_URL}") | crontab -
+            echo "*/5 * * * * root curl -fsS --retry 3 ${UPTIMEROBOT_PING_URL}" > /etc/cron.d/uptimerobot
+            chmod 644 /etc/cron.d/uptimerobot
         fi
     fi
 

@@ -25,7 +25,16 @@ IP=$(curl -s http://ipv4.icanhazip.com/)
 
 echo "Updating Cloudflare record for $CF_RECORD_NAME to $IP" >> "$LOG_FILE"
 
-curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records/${CF_RECORD_NAME}" \
+RECORD_ID=$(curl -s -X GET "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records?type=A&name=${CF_RECORD_NAME}" \
+    -H "Authorization: Bearer ${CF_API_TOKEN}" \
+    -H "Content-Type: application/json" | grep -Po '(?<="id":")[^"]*')
+
+if [ -z "$RECORD_ID" ]; then
+    echo "Error: Could not find record ID for $CF_RECORD_NAME" >> "$LOG_FILE"
+    exit 1
+fi
+
+curl -s -X PUT "https://api.cloudflare.com/client/v4/zones/${CF_ZONE_ID}/dns_records/${RECORD_ID}" \
      -H "Authorization: Bearer ${CF_API_TOKEN}" \
      -H "Content-Type: application/json" \
      --data "{\"type\":\"A\",\"name\":\"${CF_RECORD_NAME}\",\"content\":\"${IP}\",\"ttl\":120,\"proxied\":false}" | tee -a "$LOG_FILE"
