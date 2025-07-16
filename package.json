@@ -1,0 +1,11 @@
+{
+  "name": "anonaddy-setup",
+  "version": "1.0.0",
+  "description": "A hardened and automated setup for AnonAddy.",
+  "scripts": {
+    "generate-traefik-password": "htpasswd -nb admin"
+  },
+  "dependencies": {
+    "htpasswd-js": "^1.0.0"
+  }
+}

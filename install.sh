@@ -57,7 +57,10 @@ main() {
     apt-get update && apt-get upgrade -y
 
     log "Installing base packages..."
-    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip aide auditd lynis
+    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip aide auditd lynis nodejs npm
+
+    log "Installing npm dependencies..."
+    npm install
 
     # --- Security ---
     log "Applying SSH hardening..."

@@ -38,15 +38,40 @@ This repository provides a comprehensive, automated, and hardened setup for self
     ```
     Now, edit `config.env` with your desired settings.
 
-3.  **Make the installation script executable:**
+3.  **Generate Traefik Password:**
+    To secure your Traefik dashboard, you need to generate a password hash. You can do this by running the following command and entering your desired password when prompted:
     ```bash
-    chmod +x install.sh
+    npm install
+    npm run generate-traefik-password your_password_here
+    ```
+    Copy the resulting hash into the `TRAEFIK_PASSWORD_HASH` variable in your `config.env` file.
+
+4.  **Make the installation script executable:**
+    ```bash
+    chmod +x install.sh scripts/*.sh
     ```
 
-4.  **Run the installation script:**
+5.  **Run the installation script:**
     ```bash
     sudo ./install.sh
     ```
+
+## Recommended Configurations
+
+For a highly secure setup, it is recommended to enable the following features in your `config.env` file:
+
+- `ENABLE_UFW=true`
+- `ENABLE_FAIL2BAN=true`
+- `ENABLE_TRAEFIK=true`
+- `ENABLE_ANONADDY=true`
+- `ENABLE_WATCHTOWER=true`
+- `ENABLE_BACKUP=true`
+- `ENABLE_MONITORING=true`
+- `ENABLE_TOR_HARDEN=true`
+- `ENABLE_IP_BLACKLIST=true`
+- `ENABLE_AIDE=true`
+- `ENABLE_AUDITD=true`
+- `ENABLE_LYNIS=true`
 
 ## Configuration
 
@@ -72,7 +97,16 @@ All configuration is done in the `config.env` file. Here's an overview of the av
 | `ENABLE_MONITORING`      | Set to `true` to install Netdata for monitoring.                            |
 | `ENABLE_TOR_HARDEN`      | Set to `true` to apply TOR hardening settings.                              |
 | `ENABLE_IP_BLACKLIST`    | Set to `true` to enable automatic IP blacklisting.                          |
+| `ENABLE_AIDE`            | Set to `true` to enable AIDE for file integrity monitoring.                 |
+| `ENABLE_AUDITD`          | Set to `true` to enable auditd for system auditing.                         |
+| `ENABLE_LYNIS`           | Set to `true` to run a Lynis security scan.                                 |
+| `ADMIN_USER`             | The dedicated admin user for SSH access.                                    |
+| `SSH_PORT`               | The SSH port to use.                                                        |
+| `SSH_ALLOWED_IP`         | An optional IP address or range to restrict SSH access to.                  |
 | `BACKUP_DIR`             | The directory where backups will be stored.                                 |
+| `TRAEFIK_USER`           | The username for the Traefik dashboard.                                     |
+| `TRAEFIK_PASSWORD_HASH`  | The hashed password for the Traefik dashboard.                              |
+| `UPTIMEROBOT_PING_URL`   | The URL for UptimeRobot heartbeats.                                         |
 
 ## Contributing
 
