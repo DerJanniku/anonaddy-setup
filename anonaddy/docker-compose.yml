@@ -1,0 +1,47 @@
+version: '3.7'
+
+networks:
+  web:
+    external: true
+  default:
+    driver: bridge
+
+services:
+  anonaddy:
+    image: anonaddy/anonaddy:latest
+    container_name: anonaddy
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./data:/data
+    networks:
+      - web
+      - default
+    depends_on:
+      - redis
+      - mariadb
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.anonaddy.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.anonaddy.entrypoints=websecure"
+      - "traefik.http.routers.anonaddy.tls.certresolver=le"
+      - "traefik.http.services.anonaddy.loadbalancer.server.port=8000"
+
+  redis:
+    image: redis:6-alpine
+    container_name: anonaddy_redis
+    restart: unless-stopped
+    volumes:
+      - ./redis:/data
+    networks:
+      - default
+
+  mariadb:
+    image: mariadb:10.6
+    container_name: anonaddy_mariadb
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./mariadb:/var/lib/mysql
+    networks:
+      - default

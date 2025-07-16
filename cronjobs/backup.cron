@@ -1,0 +1,1 @@
+0 2 * * * root tar -czf /root/backups/anonaddy-$(date +\%F).tar.gz /workspaces/anonaddy-setup/anonaddy/data

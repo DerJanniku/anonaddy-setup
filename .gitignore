@@ -1,4 +1,12 @@
+# Logs
 logs/
-anonaddy/anondaddy/.env
-traefik/acme.json
+
+# Environment files
 config.env
+anonaddy/.env
+
+# Traefik
+traefik/acme.json
+
+# Backups
+backups/

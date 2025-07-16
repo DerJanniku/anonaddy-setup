@@ -1,0 +1,1 @@
+*/5 * * * * root /usr/bin/bash /workspaces/anonaddy-setup/scripts/update_duckdns.sh

@@ -1,0 +1,1 @@
+0 3 * * * root /usr/bin/bash /workspaces/anonaddy-setup/scripts/ip_blacklist_update.sh
