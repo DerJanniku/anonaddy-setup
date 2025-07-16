@@ -57,12 +57,27 @@ main() {
     apt-get update && apt-get upgrade -y
 
     log "Installing base packages..."
-    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip
+    apt-get install -y curl git ufw fail2ban cron docker.io docker-compose unzip aide auditd lynis
 
     # --- Security ---
+    log "Applying SSH hardening..."
+    useradd -m -s /bin/bash "$ADMIN_USER"
+    usermod -aG sudo "$ADMIN_USER"
+    sed -i "s/^#Port 22/Port $SSH_PORT/" /etc/ssh/sshd_config
+    sed -i "s/^PermitRootLogin.*/PermitRootLogin no/" /etc/ssh/sshd_config
+    sed -i "s/^#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
+    echo "AllowUsers $ADMIN_USER" >> /etc/ssh/sshd_config
+    systemctl restart sshd
+
     if check_bool "$ENABLE_UFW"; then
         log "Setting up UFW firewall..."
-        ufw allow ssh
+        ufw default deny incoming
+        ufw default allow outgoing
+        if [ -n "$SSH_ALLOWED_IP" ]; then
+            ufw allow from "$SSH_ALLOWED_IP" to any port "$SSH_PORT"
+        else
+            ufw allow "$SSH_PORT"
+        fi
         ufw allow http
         ufw allow https
         ufw --force enable
@@ -70,6 +85,22 @@ main() {
 
     if check_bool "$ENABLE_FAIL2BAN"; then
         log "Enabling Fail2Ban..."
+        cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+        sed -i "s/bantime  = 10m/bantime  = 1h/" /etc/fail2ban/jail.local
+        sed -i "s/maxretry = 5/maxretry = 3/" /etc/fail2ban/jail.local
+        cat >> /etc/fail2ban/jail.local <<EOF
+
+[nginx-http-auth]
+enabled = true
+port    = http,https
+logpath = /var/log/nginx/access.log
+
+[nginx-badbots]
+enabled = true
+port    = http,https
+logpath = /var/log/nginx/access.log
+maxretry = 2
+EOF
         systemctl enable fail2ban
         systemctl start fail2ban
     fi
@@ -84,6 +115,23 @@ main() {
         bash scripts/ip_blacklist_update.sh
         cp cronjobs/ipblacklist.cron /etc/cron.d/ipblacklist
         chmod 644 /etc/cron.d/ipblacklist
+    fi
+
+    if check_bool "$ENABLE_AIDE"; then
+        log "Initializing AIDE..."
+        aideinit
+        cp /var/lib/aide/aide.db.new /var/lib/aide/aide.db
+    fi
+
+    if check_bool "$ENABLE_AUDITD"; then
+        log "Configuring auditd..."
+        systemctl enable auditd
+        systemctl start auditd
+    fi
+
+    if check_bool "$ENABLE_LYNIS"; then
+        log "Running Lynis security scan..."
+        lynis audit system --quiet --log-file /var/log/lynis-report.dat
     fi
 
     # --- DNS ---

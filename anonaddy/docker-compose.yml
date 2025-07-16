@@ -26,6 +26,8 @@ services:
       - "traefik.http.routers.anonaddy.entrypoints=websecure"
       - "traefik.http.routers.anonaddy.tls.certresolver=le"
       - "traefik.http.services.anonaddy.loadbalancer.server.port=8000"
+    security_opt:
+      - no-new-privileges:true
 
   redis:
     image: redis:6-alpine
@@ -35,6 +37,8 @@ services:
       - ./redis:/data
     networks:
       - default
+    security_opt:
+      - no-new-privileges:true
 
   mariadb:
     image: mariadb:10.6
@@ -45,3 +49,5 @@ services:
       - ./mariadb:/var/lib/mysql
     networks:
       - default
+    security_opt:
+      - no-new-privileges:true

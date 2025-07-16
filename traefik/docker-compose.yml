@@ -6,7 +6,7 @@ services:
     container_name: "traefik"
     restart: unless-stopped
     command:
-      - "--api.insecure=true"
+      - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
@@ -35,6 +35,8 @@ services:
       # Add basic auth to the dashboard
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_USER}:${TRAEFIK_PASSWORD_HASH}"
       - "traefik.http.routers.traefik.middlewares=traefik-auth"
+    security_opt:
+      - no-new-privileges:true
 
 networks:
   web:
